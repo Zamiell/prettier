@@ -2,6 +2,7 @@ import * as prettier from "../index.js";
 import Context from "./context.js";
 import logFileInfoOrDie from "./file-info.js";
 import logResolvedConfigPathOrDie from "./find-config-path.js";
+import logResolvedIgnorePathOrDie from "./find-ignore-path.js";
 import { formatFiles, formatStdin } from "./format.js";
 import createLogger from "./logger.js";
 import { parseArgvWithoutPlugins } from "./options/parse-cli-arguments.js";
@@ -50,6 +51,10 @@ async function main(context) {
     throw new Error("Cannot use --find-config-path with multiple files");
   }
 
+  if (context.argv.findIgnorePath && context.filePatterns.length > 0) {
+    throw new Error("Cannot use --find-ignore-path with multiple files");
+  }
+
   if (context.argv.fileInfo && context.filePatterns.length > 0) {
     throw new Error("Cannot use --file-info with multiple files");
   }
@@ -78,6 +83,11 @@ async function main(context) {
 
   if (context.argv.findConfigPath) {
     await logResolvedConfigPathOrDie(context);
+    return;
+  }
+
+  if (context.argv.findIgnorePath) {
+    await logResolvedIgnorePathOrDie(context);
     return;
   }
 
